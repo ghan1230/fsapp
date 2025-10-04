@@ -241,9 +241,9 @@
         </div>
 
         <div class="button-group">
-            <button class="btn-save" onclick="saveKeys()">💾 저장</button>
-            <button class="btn-test" onclick="testKeys()">🧪 테스트</button>
-            <button class="btn-clear" onclick="clearKeys()">🗑️ 초기화</button>
+            <button type="button" class="btn-save" onclick="saveKeys()">💾 저장</button>
+            <button type="button" class="btn-test" onclick="testKeys(); return false;">🧪 테스트</button>
+            <button type="button" class="btn-clear" onclick="clearKeys()">🗑️ 초기화</button>
         </div>
 
         <div id="message" class="message"></div>
@@ -302,16 +302,20 @@
         }
 
         async function testKeys() {
+            // 이벤트 전파 방지
+            event.preventDefault();
+            event.stopPropagation();
+            
             const dartKey = document.getElementById('dartKey').value.trim();
             const finnhubKey = document.getElementById('finnhubKey').value.trim();
             const geminiKey = document.getElementById('geminiKey').value.trim();
 
             if (!dartKey && !finnhubKey) {
                 showMessage('테스트할 API 키를 입력하세요.', 'error');
-                return;
+                return false;
             }
 
-            showMessage('API 키 테스트 중...', 'info');
+            showMessage('🔄 API 키 테스트 중... 잠시만 기다려주세요.', 'info');
 
             try {
                 const response = await fetch('/api/test_keys', {
@@ -329,23 +333,44 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    let message = '✅ 테스트 결과:\n';
-                    if (result.dart) message += '\n✓ Open DART API: 정상';
-                    else if (dartKey) message += '\n✗ Open DART API: 실패';
+                    let message = '✅ 테스트 결과:\n\n';
+                    let allSuccess = true;
                     
-                    if (result.finnhub) message += '\n✓ Finnhub API: 정상';
-                    else if (finnhubKey) message += '\n✗ Finnhub API: 실패';
+                    if (dartKey) {
+                        if (result.dart) {
+                            message += '✓ Open DART API: 정상\n';
+                        } else {
+                            message += '✗ Open DART API: 실패 (키를 확인하세요)\n';
+                            allSuccess = false;
+                        }
+                    }
                     
-                    if (result.gemini) message += '\n✓ Gemini AI API: 정상';
-                    else if (geminiKey) message += '\n✗ Gemini AI API: 실패';
+                    if (finnhubKey) {
+                        if (result.finnhub) {
+                            message += '✓ Finnhub API: 정상\n';
+                        } else {
+                            message += '✗ Finnhub API: 실패 (키를 확인하세요)\n';
+                            allSuccess = false;
+                        }
+                    }
+                    
+                    if (geminiKey) {
+                        if (result.gemini) {
+                            message += '✓ Gemini AI API: 정상\n';
+                        } else {
+                            message += '✗ Gemini AI API: 실패 (키를 확인하세요)\n';
+                        }
+                    }
 
-                    showMessage(message, result.dart && result.finnhub ? 'success' : 'error');
+                    showMessage(message, allSuccess ? 'success' : 'error');
                 } else {
-                    showMessage('❌ 테스트 실패: ' + result.error, 'error');
+                    showMessage('❌ 테스트 실패: ' + (result.error || '알 수 없는 오류'), 'error');
                 }
             } catch (error) {
                 showMessage('❌ 테스트 중 오류 발생: ' + error.message, 'error');
             }
+            
+            return false;
         }
 
         function clearKeys() {

@@ -537,13 +537,22 @@
             chartsSection.style.display = 'none';
 
             try {
+                // localStorage에서 API 키 가져오기
+                const apiKey = localStorage.getItem('OPEN_DART_API_KEY');
+                if (!apiKey) {
+                    alert('API 키가 설정되지 않았습니다.\n설정 페이지에서 API 키를 입력해주세요.');
+                    window.location.href = '/settings';
+                    return;
+                }
+                
                 const response = await fetch('/api/financial_data', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         corp_code: selectedCompany.corp_code,
                         bsns_year: document.getElementById('businessYear').value,
-                        reprt_code: document.getElementById('reportType').value
+                        reprt_code: document.getElementById('reportType').value,
+                        api_key: apiKey  // API 키 전달
                     })
                 });
 

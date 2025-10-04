@@ -446,14 +446,21 @@ def search_us_stocks():
 def get_us_stock_data():
     """미국 주식 데이터 조회"""
     try:
-        finnhub_api = FinnhubAPI()
         data = request.get_json()
         symbol = data.get("symbol", "").upper().strip()
+        api_key = data.get("api_key")  # 클라이언트에서 전달받은 API 키
 
         if not symbol:
             return jsonify({"error": "심볼을 입력해주세요."}), 400
 
+        if not api_key:
+            return jsonify({"error": "Finnhub API 키가 필요합니다. 설정 페이지에서 API 키를 입력해주세요."}), 401
+
         print(f"[REQUEST] US stock data: {symbol}")
+
+        # API 키를 사용하여 FinnhubAPI 인스턴스 생성
+        os.environ['FINNHUB_API_KEY'] = api_key
+        finnhub_api = FinnhubAPI()
 
         # 종합 데이터 조회
         comprehensive_data = finnhub_api.format_comprehensive_data(symbol)
@@ -465,7 +472,7 @@ def get_us_stock_data():
             return jsonify({"error": "해당 심볼의 데이터를 찾을 수 없습니다."}), 404
 
     except ValueError as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"error": str(e)}), 401
     except Exception as e:
         print(f"[ERROR] US stock data error: {e}")
         return jsonify({"error": "데이터 조회 중 오류가 발생했습니다."}), 500

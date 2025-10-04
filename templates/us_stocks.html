@@ -399,12 +399,23 @@
             resultsDiv.innerHTML = '<div class="loading">검색 중...</div>';
 
             try {
+                // localStorage에서 API 키 가져오기
+                const apiKey = localStorage.getItem('FINNHUB_API_KEY');
+                if (!apiKey) {
+                    alert('Finnhub API 키가 설정되지 않았습니다.\n설정 페이지에서 API 키를 입력해주세요.');
+                    window.location.href = '/settings';
+                    return;
+                }
+                
                 const response = await fetch('/api/us_stocks/search', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ search_term: searchTerm })
+                    body: JSON.stringify({ 
+                        search_term: searchTerm,
+                        api_key: apiKey  // API 키 전달
+                    })
                 });
 
                 const data = await response.json();
@@ -458,12 +469,23 @@
             stockDataDiv.style.display = 'block';
 
             try {
+                // localStorage에서 API 키 가져오기
+                const apiKey = localStorage.getItem('FINNHUB_API_KEY');
+                if (!apiKey) {
+                    alert('Finnhub API 키가 설정되지 않았습니다.\n설정 페이지에서 API 키를 입력해주세요.');
+                    window.location.href = '/settings';
+                    return;
+                }
+                
                 const response = await fetch('/api/us_stocks/data', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ symbol: symbol })
+                    body: JSON.stringify({ 
+                        symbol: symbol,
+                        api_key: apiKey  // API 키 전달
+                    })
                 });
 
                 const data = await response.json();
