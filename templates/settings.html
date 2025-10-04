@@ -154,25 +154,30 @@
             background: #c53030;
         }
         .message {
-            padding: 12px;
-            border-radius: 6px;
+            padding: 16px 20px;
+            border-radius: 8px;
             margin-top: 20px;
             display: none;
+            white-space: pre-line;
+            font-size: 15px;
+            line-height: 1.6;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         .message.success {
-            background: #c6f6d5;
-            color: #22543d;
-            border: 1px solid #9ae6b4;
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
         }
         .message.error {
-            background: #fed7d7;
-            color: #742a2a;
-            border: 1px solid #fc8181;
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #dc3545;
         }
         .message.info {
-            background: #bee3f8;
-            color: #2c5282;
-            border: 1px solid #90cdf4;
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 2px solid #17a2b8;
         }
         .privacy-notice {
             background: #fef5e7;
@@ -330,35 +335,44 @@
                 const result = await response.json();
 
                 if (response.ok) {
-                    let message = '✅ 테스트 결과:\n\n';
-                    let allSuccess = true;
+                    let message = '✅ 테스트 결과: ';
+                    let successCount = 0;
+                    let totalCount = 0;
+                    let details = [];
                     
                     if (dartKey) {
+                        totalCount++;
                         if (result.dart) {
-                            message += '✓ Open DART API: 정상\n';
+                            details.push('✓ Open DART API: 정상');
+                            successCount++;
                         } else {
-                            message += '✗ Open DART API: 실패 (키를 확인하세요)\n';
-                            allSuccess = false;
+                            details.push('✗ Open DART API: 실패 (키를 확인하세요)');
                         }
                     }
                     
                     if (finnhubKey) {
+                        totalCount++;
                         if (result.finnhub) {
-                            message += '✓ Finnhub API: 정상\n';
+                            details.push('✓ Finnhub API: 정상');
+                            successCount++;
                         } else {
-                            message += '✗ Finnhub API: 실패 (키를 확인하세요)\n';
-                            allSuccess = false;
+                            details.push('✗ Finnhub API: 실패 (키를 확인하세요)');
                         }
                     }
                     
                     if (geminiKey) {
+                        totalCount++;
                         if (result.gemini) {
-                            message += '✓ Gemini AI API: 정상\n';
+                            details.push('✓ Gemini AI API: 정상');
+                            successCount++;
                         } else {
-                            message += '✗ Gemini AI API: 실패 (키를 확인하세요)\n';
+                            details.push('✗ Gemini AI API: 실패 (키를 확인하세요)');
                         }
                     }
 
+                    const allSuccess = successCount === totalCount;
+                    message += `${successCount}/${totalCount} 성공\n\n` + details.join('\n');
+                    
                     showMessage(message, allSuccess ? 'success' : 'error');
                 } else {
                     showMessage('❌ 테스트 실패: ' + (result.error || '알 수 없는 오류'), 'error');
@@ -390,10 +404,8 @@
             messageDiv.className = 'message ' + type;
             messageDiv.style.display = 'block';
 
-            // 5초 후 메시지 숨기기
-            setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 5000);
+            // 메시지를 계속 표시 (자동으로 사라지지 않음)
+            // 사용자가 다른 작업을 할 때만 사라짐
         }
     </script>
 </body>

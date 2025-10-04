@@ -95,35 +95,82 @@ def test_keys():
     # Open DART API 테스트
     if dart_key:
         try:
+            print(f"[TEST] Testing DART API key...")
             url = "https://opendart.fss.or.kr/api/corpCode.xml"
             params = {"crtfc_key": dart_key}
-            response = requests.get(url, params=params, timeout=5)
-            results["dart"] = (
-                response.status_code == 200 and "00126380" in response.text
-            )
-        except:
+            response = requests.get(url, params=params, timeout=10)
+            print(f"[TEST] DART API response status: {response.status_code}")
+            print(f"[TEST] DART API content-type: {response.headers.get('content-type', 'N/A')}")
+            
+            # 성공 조건: 200 응답 + ZIP 파일 (application/x-msdownload 또는 application/zip)
+            if response.status_code == 200:
+                content_type = response.headers.get('content-type', '').lower()
+                content_disposition = response.headers.get('content-disposition', '').lower()
+                
+                # ZIP 파일이면 성공 (CORPCODE.zip)
+                is_zip = ('zip' in content_type or 
+                         'msdownload' in content_type or 
+                         'corpcode.zip' in content_disposition or
+                         response.content[:2] == b'PK')  # ZIP 파일 매직 넘버
+                
+                results["dart"] = is_zip
+                print(f"[TEST] DART API result: {results['dart']} (is_zip: {is_zip})")
+            else:
+                print(f"[TEST] DART API failed with status {response.status_code}")
+        except Exception as e:
+            print(f"[TEST] DART API exception: {e}")
             pass
 
     # Finnhub API 테스트
     if finnhub_key:
         try:
+            print(f"[TEST] Testing Finnhub API key...")
             url = "https://finnhub.io/api/v1/quote"
             params = {"symbol": "AAPL", "token": finnhub_key}
-            response = requests.get(url, params=params, timeout=5)
-            results["finnhub"] = response.status_code == 200
-        except:
+            response = requests.get(url, params=params, timeout=10)
+            print(f"[TEST] Finnhub API response status: {response.status_code}")
+            
+            # 성공 조건: 200 응답 + 유효한 JSON 데이터
+            if response.status_code == 200:
+                data = response.json()
+                # 'c' (current price) 필드가 있으면 성공
+                results["finnhub"] = 'c' in data and data['c'] is not None
+                print(f"[TEST] Finnhub API result: {results['finnhub']}, data: {data}")
+            else:
+                print(f"[TEST] Finnhub API failed with status {response.status_code}")
+        except Exception as e:
+            print(f"[TEST] Finnhub API exception: {e}")
             pass
 
     # Gemini API 테스트
     if gemini_key:
         try:
-            url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key={gemini_key}"
-            payload = {"contents": [{"parts": [{"text": "test"}]}]}
-            response = requests.post(url, json=payload, timeout=5)
-            results["gemini"] = response.status_code == 200
-        except:
+            print(f"[TEST] Testing Gemini API key...")
+            # 여러 모델 시도
+            models = ["gemini-2.0-flash-exp", "gemini-1.5-flash", "gemini-1.5-pro"]
+            
+            for model in models:
+                try:
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={gemini_key}"
+                    payload = {"contents": [{"parts": [{"text": "test"}]}]}
+                    response = requests.post(url, json=payload, timeout=10)
+                    print(f"[TEST] Gemini API ({model}) response status: {response.status_code}")
+                    
+                    if response.status_code == 200:
+                        data = response.json()
+                        results["gemini"] = 'candidates' in data
+                        print(f"[TEST] Gemini API result: {results['gemini']} with model {model}")
+                        break
+                except:
+                    continue
+                    
+            if not results["gemini"]:
+                print(f"[TEST] Gemini API failed with all models")
+        except Exception as e:
+            print(f"[TEST] Gemini API exception: {e}")
             pass
 
+    print(f"[TEST] Final results: {results}")
     return jsonify(results)
 
 
