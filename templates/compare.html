@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Company Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 0;
+            color: #2c3e50;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #1a1f36;
+            color: white;
+            padding: 20px 40px;
+            border-bottom: 1px solid #2d3748;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.7;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-color: rgba(255,255,255,0.2);
+        }
+        
+        .nav-links a.active {
+            background: #3182ce;
+            color: white;
+            border-color: #3182ce;
+        }
+        
+        .content {
+            padding: 30px 40px;
+        }
+        
+        .search-section {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .company-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .selector-box {
+            border: 2px dashed #cbd5e0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .selector-box.filled {
+            border-style: solid;
+            border-color: #3182ce;
+            background: #ebf8ff;
+        }
+        
+        .selector-box input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        
+        .selector-box button {
+            padding: 8px 16px;
+            background: #3182ce;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .selector-box button:hover {
+            background: #2c5aa0;
+        }
+        
+        .selected-company {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+        }
+        
+        .compare-btn {
+            padding: 12px 32px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            display: block;
+        }
+        
+        .compare-btn:hover {
+            background: #059669;
+        }
+        
+        .compare-btn:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+        }
+        
+        .comparison-results {
+            display: none;
+        }
+        
+        .comparison-table {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        
+        .comparison-table h3 {
+            font-size: 1.15em;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        th {
+            background: #f7fafc;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        td {
+            color: #4a5568;
+        }
+        
+        .metric-name {
+            font-weight: 500;
+            color: #2d3748;
+        }
+        
+        .best-value {
+            background: #d1fae5;
+            font-weight: 600;
+            color: #065f46;
+        }
+        
+        .worst-value {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .chart-container {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #718096;
+        }
+        
+        .error {
+            color: #c53030;
+            background: #fff5f5;
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin: 10px 0;
+            border-left: 4px solid #fc8181;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Company Comparison</h1>
+            <p>기업 간 재무제표 및 주가 비교 분석</p>
+            <div class="nav-links">
+                <a href="/">한국 주식</a>
+                <a href="/us_stocks">미국 주식</a>
+                <a href="/compare" class="active">비교 분석</a>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="search-section">
+                <h2 style="margin-bottom: 20px; color: #2d3748;">Select Companies to Compare (2-3 companies)</h2>
+                
+                <div class="company-selector">
+                    <div class="selector-box" id="selector1">
+                        <h3>Company 1</h3>
+                        <input type="text" id="search1" placeholder="Enter company name">
+                        <button onclick="searchCompany(1)">Search</button>
+                        <div id="results1"></div>
+                        <div id="selected1" class="selected-company" style="display:none;"></div>
+                    </div>
+                    
+                    <div class="selector-box" id="selector2">
+                        <h3>Company 2</h3>
+                        <input type="text" id="search2" placeholder="Enter company name">
+                        <button onclick="searchCompany(2)">Search</button>
+                        <div id="results2"></div>
+                        <div id="selected2" class="selected-company" style="display:none;"></div>
+                    </div>
+                    
+                    <div class="selector-box" id="selector3">
+                        <h3>Company 3 (Optional)</h3>
+                        <input type="text" id="search3" placeholder="Enter company name">
+                        <button onclick="searchCompany(3)">Search</button>
+                        <div id="results3"></div>
+                        <div id="selected3" class="selected-company" style="display:none;"></div>
+                    </div>
+                </div>
+                
+                <button class="compare-btn" id="compareBtn" onclick="compareCompanies()" disabled>
+                    Compare Selected Companies
+                </button>
+            </div>
+
+            <div class="comparison-results" id="comparisonResults">
+                <div class="comparison-table">
+                    <h3>Financial Metrics Comparison</h3>
+                    <div id="metricsTable"></div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 20px;">Revenue Comparison</h3>
+                    <canvas id="revenueChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 20px;">Profitability Comparison</h3>
+                    <canvas id="profitChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 style="margin-bottom: 20px;">Stock Price Performance (3 Months)</h3>
+                    <canvas id="stockChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedCompanies = {};
+        let comparisonData = {};
+
+        async function searchCompany(index) {
+            const searchInput = document.getElementById(`search${index}`);
+            const resultsDiv = document.getElementById(`results${index}`);
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                alert('Please enter a company name');
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<div class="loading">Searching...</div>';
+            
+            try {
+                const response = await fetch('/api/search_company', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ company_name: query })
+                });
+                
+                const data = await response.json();
+                
+                if (data.results && data.results.length > 0) {
+                    let html = '<div style="max-height: 200px; overflow-y: auto; margin-top: 10px;">';
+                    data.results.slice(0, 5).forEach(company => {
+                        html += `
+                            <div style="padding: 8px; border: 1px solid #e2e8f0; margin-bottom: 5px; cursor: pointer; border-radius: 4px;"
+                                 onclick="selectCompany(${index}, '${company.corp_code}', '${company.corp_name}', '${company.stock_code}')">
+                                <strong>${company.corp_name}</strong>
+                                ${company.stock_code ? `<br><small>Stock Code: ${company.stock_code}</small>` : ''}
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    resultsDiv.innerHTML = html;
+                } else {
+                    resultsDiv.innerHTML = '<div class="error">No results found</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="error">Search failed</div>';
+            }
+        }
+
+        function selectCompany(index, corpCode, corpName, stockCode) {
+            selectedCompanies[index] = {
+                corp_code: corpCode,
+                corp_name: corpName,
+                stock_code: stockCode
+            };
+            
+            document.getElementById(`results${index}`).innerHTML = '';
+            document.getElementById(`selected${index}`).innerHTML = `
+                <strong>${corpName}</strong>
+                <button onclick="removeCompany(${index})" style="margin-left: 10px; padding: 4px 8px; background: #ef4444;">Remove</button>
+            `;
+            document.getElementById(`selected${index}`).style.display = 'block';
+            document.getElementById(`selector${index}`).classList.add('filled');
+            
+            updateCompareButton();
+        }
+
+        function removeCompany(index) {
+            delete selectedCompanies[index];
+            document.getElementById(`selected${index}`).style.display = 'none';
+            document.getElementById(`selector${index}`).classList.remove('filled');
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const count = Object.keys(selectedCompanies).length;
+            const btn = document.getElementById('compareBtn');
+            btn.disabled = count < 2;
+            btn.textContent = count >= 2 ? `Compare ${count} Companies` : 'Select at least 2 companies';
+        }
+
+        async function compareCompanies() {
+            const companies = Object.values(selectedCompanies);
+            
+            if (companies.length < 2) {
+                alert('Please select at least 2 companies');
+                return;
+            }
+            
+            document.getElementById('comparisonResults').innerHTML = '<div class="loading">Loading comparison data...</div>';
+            document.getElementById('comparisonResults').style.display = 'block';
+            
+            try {
+                console.log('Fetching data for companies:', companies);
+                
+                // Fetch data for all companies
+                const promises = companies.map(async company => {
+                    console.log('Fetching data for:', company.corp_code);
+                    const response = await fetch('/api/compare_companies', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ corp_code: company.corp_code })
+                    });
+                    
+                    if (!response.ok) {
+                        console.error('API error for', company.corp_code, ':', response.status);
+                        throw new Error(`Failed to fetch data for ${company.corp_name}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Data received for', company.corp_code, ':', data);
+                    return data;
+                });
+                
+                const results = await Promise.all(promises);
+                console.log('All results:', results);
+                
+                // Check if we have valid data
+                if (!results || results.length === 0) {
+                    throw new Error('No data received');
+                }
+                
+                // Display comparison
+                displayComparison(companies, results);
+                
+            } catch (error) {
+                console.error('Comparison error:', error);
+                document.getElementById('comparisonResults').innerHTML = `<div class="error">Failed to load comparison data: ${error.message}</div>`;
+            }
+        }
+
+        function displayComparison(companies, results) {
+            console.log('Displaying comparison with:', companies, results);
+            
+            try {
+                // Restore the comparison results HTML structure
+                document.getElementById('comparisonResults').innerHTML = `
+                    <div class="comparison-table">
+                        <h3>Financial Metrics Comparison</h3>
+                        <div id="metricsTable"></div>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 20px;">Revenue Comparison</h3>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 20px;">Profitability Comparison</h3>
+                        <canvas id="profitChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3 style="margin-bottom: 20px;">Stock Price Performance (3 Months)</h3>
+                        <canvas id="stockChart"></canvas>
+                    </div>
+                `;
+                
+                // Create metrics table
+                createMetricsTable(companies, results);
+                
+                // Create charts
+                createRevenueChart(companies, results);
+                createProfitChart(companies, results);
+                createStockChart(companies, results);
+                
+                console.log('Comparison display complete');
+            } catch (error) {
+                console.error('Display error:', error);
+                document.getElementById('comparisonResults').innerHTML = `<div class="error">Error displaying comparison: ${error.message}</div>`;
+            }
+        }
+
+        function createMetricsTable(companies, results) {
+            console.log('Creating metrics table with:', companies, results);
+            
+            try {
+                let html = '<table><thead><tr><th>Metric</th>';
+                companies.forEach(c => html += `<th>${c.corp_name}</th>`);
+                html += '</tr></thead><tbody>';
+                
+                const metrics = [
+                    { key: 'assets', label: 'Total Assets', format: 'currency' },
+                    { key: 'liabilities', label: 'Total Liabilities', format: 'currency' },
+                    { key: 'equity', label: 'Total Equity', format: 'currency' },
+                    { key: 'revenue', label: 'Revenue', format: 'currency' },
+                    { key: 'operating_profit', label: 'Operating Profit', format: 'currency' },
+                    { key: 'net_income', label: 'Net Income', format: 'currency' },
+                    { key: 'debt_ratio', label: 'Debt Ratio', format: 'percent' },
+                    { key: 'roe', label: 'ROE', format: 'percent' }
+                ];
+                
+                metrics.forEach(metric => {
+                    html += `<tr><td class="metric-name">${metric.label}</td>`;
+                    const values = results.map(r => r.financial_data?.[metric.key] || 0);
+                    const maxVal = Math.max(...values);
+                    const minVal = Math.min(...values.filter(v => v > 0));
+                    
+                    values.forEach((val, idx) => {
+                        let className = '';
+                        if (metric.key.includes('profit') || metric.key.includes('income') || metric.key === 'roe') {
+                            if (val === maxVal && val > 0) className = 'best-value';
+                            if (val === minVal && val > 0) className = 'worst-value';
+                        } else if (metric.key === 'debt_ratio') {
+                            if (val === minVal && val > 0) className = 'best-value';
+                            if (val === maxVal) className = 'worst-value';
+                        }
+                        
+                        const formatted = metric.format === 'currency' ? 
+                            `₩${(val / 100000000).toFixed(0)}억` : 
+                            `${(val * 100).toFixed(2)}%`;
+                        
+                        html += `<td class="${className}">${formatted}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table>';
+                document.getElementById('metricsTable').innerHTML = html;
+                console.log('Metrics table created successfully');
+            } catch (error) {
+                console.error('Error creating metrics table:', error);
+                document.getElementById('metricsTable').innerHTML = `<div class="error">Error creating table: ${error.message}</div>`;
+            }
+        }
+
+        function createRevenueChart(companies, results) {
+            try {
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: companies.map(c => c.corp_name),
+                        datasets: [{
+                            label: 'Revenue (억원)',
+                            data: results.map(r => (r.financial_data?.revenue || 0) / 100000000),
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Revenue (억원)'
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Revenue chart created');
+            } catch (error) {
+                console.error('Error creating revenue chart:', error);
+            }
+        }
+
+        function createProfitChart(companies, results) {
+            try {
+                const ctx = document.getElementById('profitChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: companies.map(c => c.corp_name),
+                        datasets: [
+                            {
+                                label: 'Operating Profit (억원)',
+                                data: results.map(r => (r.financial_data?.operating_profit || 0) / 100000000),
+                                backgroundColor: '#3b82f6'
+                            },
+                            {
+                                label: 'Net Income (억원)',
+                                data: results.map(r => (r.financial_data?.net_income || 0) / 100000000),
+                                backgroundColor: '#10b981'
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'Profit (억원)'
+                                }
+                            }
+                        }
+                    }
+                });
+                console.log('Profit chart created');
+            } catch (error) {
+                console.error('Error creating profit chart:', error);
+            }
+        }
+
+        function createStockChart(companies, results) {
+            const ctx = document.getElementById('stockChart').getContext('2d');
+            
+            // Check if we have stock data
+            const hasStockData = results.some(r => r.stock_data && r.stock_data.data && r.stock_data.data.length > 0);
+            
+            if (!hasStockData) {
+                ctx.canvas.parentElement.innerHTML = '<p style="text-align: center; color: #718096; padding: 40px;">Stock price data not available for selected companies</p>';
+                return;
+            }
+            
+            const datasets = results.map((r, idx) => {
+                if (!r.stock_data || !r.stock_data.data) {
+                    return null;
+                }
+                
+                return {
+                    label: companies[idx].corp_name,
+                    data: r.stock_data.data.map(d => d.close),
+                    borderColor: ['#3b82f6', '#10b981', '#f59e0b'][idx],
+                    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b'][idx],
+                    fill: false,
+                    tension: 0.1
+                };
+            }).filter(d => d !== null);
+            
+            // Get labels from the first dataset that has data
+            const labels = results.find(r => r.stock_data && r.stock_data.data)?.stock_data.data.map(d => d.date) || [];
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            title: {
+                                display: true,
+                                text: 'Stock Price (KRW)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 키 설정</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a1f36;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #718096;
+            margin-bottom: 30px;
+        }
+        .api-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3182ce;
+        }
+        .api-section h3 {
+            margin-top: 0;
+            color: #2d3748;
+        }
+        .api-section p {
+            color: #718096;
+            font-size: 0.9em;
+            margin: 10px 0;
+        }
+        .api-section a {
+            color: #3182ce;
+            text-decoration: none;
+        }
+        .api-section a:hover {
+            text-decoration: underline;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.1);
+        }
+        .required {
+            color: #e53e3e;
+        }
+        .optional {
+            color: #718096;
+            font-size: 0.85em;
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-save {
+            background: #3182ce;
+            color: white;
+        }
+        .btn-save:hover {
+            background: #2c5aa0;
+        }
+        .btn-test {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-test:hover {
+            background: #38a169;
+        }
+        .btn-clear {
+            background: #e53e3e;
+            color: white;
+        }
+        .btn-clear:hover {
+            background: #c53030;
+        }
+        .message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 20px;
+            display: none;
+        }
+        .message.success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        .message.error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        .message.info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
+        .privacy-notice {
+            background: #fef5e7;
+            border: 1px solid #f9e79f;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        .privacy-notice h4 {
+            margin-top: 0;
+            color: #7d6608;
+        }
+        .privacy-notice p {
+            color: #7d6608;
+            font-size: 0.9em;
+            margin: 5px 0;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #3182ce;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔑 API 키 설정</h1>
+        <p class="subtitle">서비스를 사용하려면 API 키가 필요합니다. 키는 브라우저에만 저장되며 서버로 전송되지 않습니다.</p>
+
+        <div class="api-section">
+            <h3>🇰🇷 Open DART API <span class="required">*필수</span></h3>
+            <p>한국 주식 재무제표 조회에 필요합니다.</p>
+            <p>발급: <a href="https://opendart.fss.or.kr/" target="_blank">https://opendart.fss.or.kr/</a></p>
+            <label for="dartKey">API 키:</label>
+            <input type="password" id="dartKey" placeholder="Open DART API 키를 입력하세요">
+        </div>
+
+        <div class="api-section">
+            <h3>🇺🇸 Finnhub API <span class="required">*필수</span></h3>
+            <p>미국 주식 정보, 뉴스, 동종 업계 비교에 필요합니다.</p>
+            <p>발급: <a href="https://finnhub.io/register" target="_blank">https://finnhub.io/register</a> (무료)</p>
+            <label for="finnhubKey">API 키:</label>
+            <input type="password" id="finnhubKey" placeholder="Finnhub API 키를 입력하세요">
+        </div>
+
+        <div class="api-section">
+            <h3>🤖 Gemini AI API <span class="optional">(선택사항)</span></h3>
+            <p>AI 재무제표 분석 기능에 필요합니다. 없어도 다른 기능은 사용 가능합니다.</p>
+            <p>발급: <a href="https://aistudio.google.com/app/apikey" target="_blank">https://aistudio.google.com/app/apikey</a> (무료)</p>
+            <label for="geminiKey">API 키:</label>
+            <input type="password" id="geminiKey" placeholder="Gemini API 키를 입력하세요 (선택사항)">
+        </div>
+
+        <div class="button-group">
+            <button class="btn-save" onclick="saveKeys()">💾 저장</button>
+            <button class="btn-test" onclick="testKeys()">🧪 테스트</button>
+            <button class="btn-clear" onclick="clearKeys()">🗑️ 초기화</button>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <div class="privacy-notice">
+            <h4>🔒 개인정보 보호</h4>
+            <p>✅ API 키는 브라우저의 localStorage에만 저장됩니다</p>
+            <p>✅ 서버로 전송되거나 저장되지 않습니다</p>
+            <p>✅ 다른 사용자와 공유되지 않습니다</p>
+            <p>⚠️ 공용 컴퓨터에서는 사용 후 반드시 초기화하세요</p>
+        </div>
+
+        <a href="/" class="back-link">← 메인으로 돌아가기</a>
+    </div>
+
+    <script>
+        // 페이지 로드 시 저장된 키 불러오기
+        window.onload = function() {
+            const dartKey = localStorage.getItem('OPEN_DART_API_KEY');
+            const finnhubKey = localStorage.getItem('FINNHUB_API_KEY');
+            const geminiKey = localStorage.getItem('GEMINI_API_KEY');
+
+            if (dartKey) document.getElementById('dartKey').value = dartKey;
+            if (finnhubKey) document.getElementById('finnhubKey').value = finnhubKey;
+            if (geminiKey) document.getElementById('geminiKey').value = geminiKey;
+
+            // 키가 저장되어 있으면 알림
+            if (dartKey || finnhubKey) {
+                showMessage('저장된 API 키를 불러왔습니다.', 'info');
+            }
+        };
+
+        function saveKeys() {
+            const dartKey = document.getElementById('dartKey').value.trim();
+            const finnhubKey = document.getElementById('finnhubKey').value.trim();
+            const geminiKey = document.getElementById('geminiKey').value.trim();
+
+            // 필수 키 확인
+            if (!dartKey || !finnhubKey) {
+                showMessage('Open DART API 키와 Finnhub API 키는 필수입니다.', 'error');
+                return;
+            }
+
+            // localStorage에 저장
+            localStorage.setItem('OPEN_DART_API_KEY', dartKey);
+            localStorage.setItem('FINNHUB_API_KEY', finnhubKey);
+            if (geminiKey) {
+                localStorage.setItem('GEMINI_API_KEY', geminiKey);
+            }
+
+            showMessage('✅ API 키가 저장되었습니다! 이제 서비스를 사용할 수 있습니다.', 'success');
+            
+            // 3초 후 메인 페이지로 이동
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }
+
+        async function testKeys() {
+            const dartKey = document.getElementById('dartKey').value.trim();
+            const finnhubKey = document.getElementById('finnhubKey').value.trim();
+            const geminiKey = document.getElementById('geminiKey').value.trim();
+
+            if (!dartKey && !finnhubKey) {
+                showMessage('테스트할 API 키를 입력하세요.', 'error');
+                return;
+            }
+
+            showMessage('API 키 테스트 중...', 'info');
+
+            try {
+                const response = await fetch('/api/test_keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        dart_key: dartKey,
+                        finnhub_key: finnhubKey,
+                        gemini_key: geminiKey
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    let message = '✅ 테스트 결과:\n';
+                    if (result.dart) message += '\n✓ Open DART API: 정상';
+                    else if (dartKey) message += '\n✗ Open DART API: 실패';
+                    
+                    if (result.finnhub) message += '\n✓ Finnhub API: 정상';
+                    else if (finnhubKey) message += '\n✗ Finnhub API: 실패';
+                    
+                    if (result.gemini) message += '\n✓ Gemini AI API: 정상';
+                    else if (geminiKey) message += '\n✗ Gemini AI API: 실패';
+
+                    showMessage(message, result.dart && result.finnhub ? 'success' : 'error');
+                } else {
+                    showMessage('❌ 테스트 실패: ' + result.error, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ 테스트 중 오류 발생: ' + error.message, 'error');
+            }
+        }
+
+        function clearKeys() {
+            if (confirm('저장된 모든 API 키를 삭제하시겠습니까?')) {
+                localStorage.removeItem('OPEN_DART_API_KEY');
+                localStorage.removeItem('FINNHUB_API_KEY');
+                localStorage.removeItem('GEMINI_API_KEY');
+
+                document.getElementById('dartKey').value = '';
+                document.getElementById('finnhubKey').value = '';
+                document.getElementById('geminiKey').value = '';
+
+                showMessage('🗑️ 모든 API 키가 삭제되었습니다.', 'info');
+            }
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = 'message ' + type;
+            messageDiv.style.display = 'block';
+
+            // 5초 후 메시지 숨기기
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
