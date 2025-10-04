@@ -9,15 +9,56 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #f5f7fa;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+        }
+        .header {
+            background: #1a1f36;
+            color: white;
+            padding: 20px 40px;
+            border-bottom: 1px solid #2d3748;
+        }
+        .header h1 {
+            font-size: 1.8em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            font-size: 0.95em;
+            opacity: 0.7;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+        .nav-links a:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border-color: rgba(255,255,255,0.2);
+        }
+        .nav-links a.active {
+            background: #3182ce;
+            color: white;
+            border-color: #3182ce;
         }
         .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
-            border-radius: 12px;
             padding: 40px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         h1 {
             color: #1a1f36;
@@ -161,9 +202,19 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <h1>⚙️ API 키 설정</h1>
+        <p>서비스를 사용하려면 API 키가 필요합니다</p>
+        <div class="nav-links">
+            <a href="/">한국 주식</a>
+            <a href="/us_stocks">미국 주식</a>
+            <a href="/compare">비교 분석</a>
+            <a href="/settings" class="active">⚙️ API 키 설정</a>
+        </div>
+    </div>
+    
     <div class="container">
-        <h1>🔑 API 키 설정</h1>
-        <p class="subtitle">서비스를 사용하려면 API 키가 필요합니다. 키는 브라우저에만 저장되며 서버로 전송되지 않습니다.</p>
+        <p class="subtitle">키는 브라우저에만 저장되며 서버로 전송되지 않습니다.</p>
 
         <div class="api-section">
             <h3>🇰🇷 Open DART API <span class="required">*필수</span></h3>
@@ -205,7 +256,6 @@
             <p>⚠️ 공용 컴퓨터에서는 사용 후 반드시 초기화하세요</p>
         </div>
 
-        <a href="/" class="back-link">← 메인으로 돌아가기</a>
     </div>
 
     <script>

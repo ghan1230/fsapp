@@ -33,6 +33,7 @@ def load_corp_codes():
         try:
             # download_corp_codes.py 실행
             import subprocess
+
             subprocess.run(["python", "download_corp_codes.py"], check=True)
             # 다시 로드 시도
             with open("corp_codes.json", "r", encoding="utf-8") as f:
