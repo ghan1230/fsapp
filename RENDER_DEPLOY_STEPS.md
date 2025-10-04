@@ -58,16 +58,19 @@ Free (무료 플랜 선택)
 
 ---
 
-### 5단계: 환경변수 설정 (선택사항)
+### 5단계: 환경변수 설정
 
-**Environment** 탭에서:
+**Environment** 탭에서 다음 환경변수를 추가:
 
 ```
 FLASK_ENV = production
+OPEN_DART_API_KEY = your_dart_api_key_here
 ```
 
-**중요**: API 키는 설정하지 않습니다!
-(사용자가 각자 브라우저에서 입력)
+**중요**: 
+- `OPEN_DART_API_KEY`는 **필수**입니다 (한국 주식 회사 코드 다운로드용)
+- 다른 API 키는 설정하지 않습니다 (사용자가 각자 브라우저에서 입력)
+- DART API 키 발급: https://opendart.fss.or.kr/
 
 ---
 

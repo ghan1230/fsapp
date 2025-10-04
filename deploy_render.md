@@ -42,12 +42,15 @@ https://render.com 에서 가입
 Environment 탭에서 추가:
 
 ```
-OPEN_DART_API_KEY = your_dart_api_key_here
-FINNHUB_API_KEY = your_finnhub_api_key_here
-GEMINI_API_KEY = your_gemini_api_key_here
-GEMINI_MODEL = gemini-2.5-pro
 FLASK_ENV = production
+OPEN_DART_API_KEY = your_dart_api_key_here
 ```
+
+**중요**: 
+- `OPEN_DART_API_KEY`는 **필수**입니다 (한국 주식 회사 코드 다운로드용)
+- 앱 시작 시 자동으로 `corp_codes.json` 파일을 생성합니다
+- 다른 API 키는 사용자가 브라우저에서 직접 입력합니다
+- DART API 키 발급: https://opendart.fss.or.kr/ (무료, 1분 소요)
 
 ## 6. 배포
 

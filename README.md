@@ -89,15 +89,31 @@ python app.py
 
 ## 🌐 배포 (개발자)
 
-**사용자 API 키 방식**이므로 서버에 API 키를 설정할 필요가 없습니다!
+### 필수 환경변수
+배포 시 서버에 **1개의 환경변수만** 설정하면 됩니다:
+
+```env
+OPEN_DART_API_KEY=your_dart_api_key_here
+```
+
+**이유**: 앱 시작 시 한국 주식 회사 코드 데이터(corp_codes.json)를 자동으로 다운로드하기 위함
+
+**자동 처리**:
+- ✅ 앱 시작 시 corp_codes.json 자동 생성 (약 30초)
+- ✅ 114,000개 한국 회사 데이터 로드
+- ✅ 이후 재시작 시 기존 파일 사용 (즉시)
 
 ### Render 배포 (추천)
 1. GitHub 저장소 연결
 2. Build Command: `pip install -r requirements.txt`
 3. Start Command: `gunicorn app:app`
-4. 환경변수: 설정 불필요! (사용자가 각자 API 키 입력)
+4. 환경변수 설정:
+   - `OPEN_DART_API_KEY`: 서버용 (필수)
+   - 다른 API 키: 사용자가 브라우저에서 입력
 
-자세한 내용: [DEPLOYMENT_USER_API.md](./DEPLOYMENT_USER_API.md)
+자세한 내용: 
+- [DEPLOYMENT_PROCESS.md](./DEPLOYMENT_PROCESS.md) - 배포 프로세스 상세
+- [RENDER_DEPLOY_STEPS.md](./RENDER_DEPLOY_STEPS.md) - Render 단계별 가이드
 
 ### 다른 플랫폼
 - **Heroku**: [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)
