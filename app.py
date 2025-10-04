@@ -29,7 +29,17 @@ def load_corp_codes():
         with open("corp_codes.json", "r", encoding="utf-8") as f:
             return json.load(f)
     except FileNotFoundError:
-        return []
+        print("[INFO] corp_codes.json not found. Downloading...")
+        try:
+            # download_corp_codes.py 실행
+            import subprocess
+            subprocess.run(["python", "download_corp_codes.py"], check=True)
+            # 다시 로드 시도
+            with open("corp_codes.json", "r", encoding="utf-8") as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"[ERROR] Failed to download corp_codes.json: {e}")
+            return []
 
 
 corp_codes_data = load_corp_codes()

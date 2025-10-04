@@ -1,7 +1,9 @@
-# 환경변수
+# 환경변수 (민감한 정보)
 .env
 *.env
 !.env.example
+.env.local
+.env.*.local
 
 # Python
 __pycache__/
@@ -46,11 +48,27 @@ venv.bak/
 *.sqlite
 *.sqlite3
 
+# 대용량 데이터 파일
+*.xml
+*.zip
+CORPCODE.xml
+corpCode.zip
+corp_codes.json
+
+# 백업 파일
+*_backup.*
+*_working.*
+*_old.*
+*_test.*
+
 # 로그
 *.log
 logs/
 
 # 테스트
+test_*.py
+debug_*.py
+check_*.py
 .pytest_cache/
 .coverage
 htmlcov/
